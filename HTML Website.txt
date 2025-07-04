@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meine Website</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+      margin: 40px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Willkommen auf meiner Website!</h1>
+  <p>Diese Seite wird über GitHub Pages gehostet.</p>
+</body>
+</html>
