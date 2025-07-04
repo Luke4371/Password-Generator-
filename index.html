@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Passwort Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background:#111; color: #c66fff; padding: 20px; }
+    button { margin: 5px; padding: 10px 20px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #qr-code { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>Passwort Generator</h1>
+
+  <label for="length">Passwort Länge:</label>
+  <input type="number" id="length" value="12" min="1" max="100" />
+
+  <div>
+    <button id="generateBtn">Passwort generieren</button>
+    <button id="downloadQRBtn" disabled>QR Code herunterladen</button>
+    <button id="downloadTxtBtn" disabled>Passwort als TXT speichern</button>
+  </div>
+
+  <p id="passwordDisplay" style="font-size: 1.2em; margin-top: 10px;"></p>
+
+  <div id="qr-code"></div>
+
+  <script>
+    const char = 'abcdefghijklmnopqrstuvwxyz';
+    const char_big = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const specialcharacter = "_!.%$*#-<>^*+~,";
+    let usergeneratedstring = '';
+
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadQRBtn = document.getElementById('downloadQRBtn');
+    const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+    const passwordDisplay = document.getElementById('passwordDisplay');
+    const qrCodeDiv = document.getElementById('qr-code');
+
+    function getRandomInt(max) {
+      return Math.floor(Math.random() * max);
+    }
+
+    function generatePassword(length) {
+      let pwd = '';
+      while (pwd.length < length) {
+        const randomoption = getRandomInt(4);
+        if (randomoption === 0) pwd += char.charAt(getRandomInt(char.length));
+        else if (randomoption === 1) pwd += char_big.charAt(getRandomInt(char_big.length));
+        else if (randomoption === 2) pwd += numbers.charAt(getRandomInt(numbers.length));
+        else if (randomoption === 3) pwd += specialcharacter.charAt(getRandomInt(specialcharacter.length));
+      }
+      return pwd;
+    }
+
+    generateBtn.addEventListener('click', () => {
+      const length = parseInt(document.getElementById('length').value);
+      if (!length || length < 1) {
+        alert('Bitte gib eine gültige Länge ein.');
+        return;
+      }
+      usergeneratedstring = generatePassword(length);
+      passwordDisplay.textContent = `Dein Passwort: ${usergeneratedstring}`;
+      downloadQRBtn.disabled = false;
+      downloadTxtBtn.disabled = false;
+
+      qrCodeDiv.innerHTML = '';
+      QRCode.toCanvas(usergeneratedstring, { width: 200 }, (error, canvas) => {
+        if (error) {
+          console.error(error);
+          qrCodeDiv.textContent = 'QR Code konnte nicht erstellt werden.';
+        } else {
+          qrCodeDiv.appendChild(canvas);
+        }
+      });
+    });
+
+    downloadQRBtn.addEventListener('click', () => {
+      if (!usergeneratedstring) {
+        alert('Bitte erst ein Passwort generieren.');
+        return;
+      }
+      const canvas = qrCodeDiv.querySelector('canvas');
+      if (!canvas) {
+        alert('QR Code nicht gefunden.');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'password_qr.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    downloadTxtBtn.addEventListener('click', () => {
+      if (!usergeneratedstring) {
+        alert('Bitte erst ein Passwort generieren.');
+        return;
+      }
+      const blob = new Blob([usergeneratedstring + '\n'], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'password.txt';
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+
+</body>
+</html>
