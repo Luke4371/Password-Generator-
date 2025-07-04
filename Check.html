@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Passwort prüfen</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #4e4e7e);
+      color: #e0e0ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+    }
+    .container {
+      background: rgba(30, 30, 60, 0.9);
+      padding: 30px 40px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 20px #6f42c1cc;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #c66fff;
+      text-shadow: 0 0 8px #bb88ff;
+    }
+    #passwordDisplay {
+      font-size: 1.5rem;
+      margin: 20px 0;
+      padding: 12px;
+      background: #2c2c50;
+      border-radius: 8px;
+      box-shadow: inset 0 0 8px #8e6ade;
+      user-select: all;
+      cursor: pointer;
+      color: #e0caff;
+      word-break: break-word;
+    }
+    #info {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #bb99ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Passwort prüfen</h1>
+    <div id="passwordDisplay" title="Klicke, um Passwort zu kopieren"></div>
+    <div id="info"></div>
+  </div>
+
+<script>
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  function calculateStrength(pwd) {
+    let strength = 0;
+    if (pwd.length >= 8) strength += 1;
+    if (/[a-z]/.test(pwd)) strength += 1;
+    if (/[A-Z]/.test(pwd)) strength += 1;
+    if (/\d/.test(pwd)) strength += 1;
+    if (/[_!.%$*#\-<>^*+~,]/.test(pwd)) strength += 1;
+
+    switch(strength) {
+      case 5: return {text: 'Sehr Stark 💪', color: '#4caf50'};
+      case 4: return {text: 'Stark 👍', color: '#8bc34a'};
+      case 3: return {text: 'Mittel', color: '#ffeb3b'};
+      case 2: return {text: 'Schwach', color: '#ff9800'};
+      default: return {text: 'Sehr Schwach', color: '#f44336'};
+    }
+  }
+
+  const password = getQueryParam('pwd');
+  const display = document.getElementById('passwordDisplay');
+  const info = document.getElementById('info');
+
+  if (password) {
+    display.textContent = password;
+
+    const strength = calculateStrength(password);
+    info.textContent = `Passwort Stärke: ${strength.text}`;
+    info.style.color = strength.color;
+
+    display.addEventListener('click', () => {
+      navigator.clipboard.writeText(password).then(() => {
+        alert('Passwort wurde in die Zwischenablage kopiert!');
+      });
+    });
+  } else {
+    display.textContent = 'Kein Passwort gefunden!';
+    info.textContent = 'Bitte scanne einen gültigen QR-Code oder gib die URL mit Parameter pwd ein.';
+    info.style.color = '#f44336';
+  }
+</script>
+
+</body>
+</html>
