@@ -218,7 +218,7 @@
     <div id="qr-code"></div>
 
     <footer>
-      &copy; 2025 Passwort Generator – Sicher & Einfach
+      &copy; 2025 Passwort Generator – Richard & Luke
     </footer>
   </div>
 
@@ -333,7 +333,7 @@
     qrCodeDiv.innerHTML = '';
 
     // Hier: QR-Code mit Link zu check.html und Passwort als URL-Parameter
-    const url = `check.html?pwd=${encodeURIComponent(usergeneratedstring)}`;
+    const url = `https://luke4371.github.io/Password-Generator-/check.html?pwd=${encodeURIComponent(usergeneratedstring)}`;
     QRCode.toCanvas(url, { width: 220, color: { dark: '#c66fff', light: '#0000' } }, (error, canvas) => {
       if (error) {
         console.error(error);
