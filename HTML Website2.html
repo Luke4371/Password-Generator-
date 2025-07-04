@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title></title>
+</head>
+<body>
+&lt;!DOCTYPE html&gt;<br/>
+&lt;html lang=&quot;de&quot;&gt;<br/>
+&lt;head&gt;<br/>
+&lt;meta charset=&quot;UTF-8&quot; /&gt;<br/>
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;<br/>
+&lt;title&gt;Passwort Generator&lt;/title&gt;<br/>
+&lt;script src=&quot;https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js&quot;&gt;&lt;/script&gt;<br/>
+&lt;style&gt;<br/>
+&nbsp;&nbsp;body { font-family: Arial, sans-serif; background:#111; color: #c66fff; padding: 20px; }<br/>
+&nbsp;&nbsp;button { margin: 5px; padding: 10px 20px; }<br/>
+&nbsp;&nbsp;#qr-code { margin-top: 20px; }<br/>
+&lt;/style&gt;<br/>
+&lt;/head&gt;<br/>
+&lt;body&gt;<br/>
+&nbsp;<br/>
+&lt;h1&gt;Passwort Generator&lt;/h1&gt;<br/>
+&nbsp;<br/>
+&lt;label for=&quot;length&quot;&gt;Passwort L&#228;nge:&lt;/label&gt;<br/>
+&lt;input type=&quot;number&quot; id=&quot;length&quot; value=&quot;12&quot; min=&quot;1&quot; max=&quot;100&quot; /&gt;<br/>
+&nbsp;<br/>
+&lt;div&gt;<br/>
+&nbsp;&nbsp;&lt;button id=&quot;generateBtn&quot;&gt;Passwort generieren&lt;/button&gt;<br/>
+&nbsp;&nbsp;&lt;button id=&quot;downloadQRBtn&quot; disabled&gt;QR Code herunterladen&lt;/button&gt;<br/>
+&nbsp;&nbsp;&lt;button id=&quot;downloadTxtBtn&quot; disabled&gt;Passwort als TXT speichern&lt;/button&gt;<br/>
+&lt;/div&gt;<br/>
+&nbsp;<br/>
+&lt;p id=&quot;passwordDisplay&quot; style=&quot;font-size: 1.2em; margin-top: 10px;&quot;&gt;&lt;/p&gt;<br/>
+&nbsp;<br/>
+&lt;div id=&quot;qr-code&quot;&gt;&lt;/div&gt;<br/>
+&nbsp;<br/>
+&lt;script&gt;<br/>
+&nbsp;&nbsp;const char = &#39;abcdefghijklmnopqrstuvwxyz&#39;;<br/>
+&nbsp;&nbsp;const char_big = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;;<br/>
+&nbsp;&nbsp;const numbers = &#39;0123456789&#39;;<br/>
+&nbsp;&nbsp;const specialcharacter = &quot;_!.%$*#-&lt;&gt;^*+~,&quot;;<br/>
+&nbsp;&nbsp;let usergeneratedstring = &#39;&#39;;<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;const generateBtn = document.getElementById(&#39;generateBtn&#39;);<br/>
+&nbsp;&nbsp;const downloadQRBtn = document.getElementById(&#39;downloadQRBtn&#39;);<br/>
+&nbsp;&nbsp;const downloadTxtBtn = document.getElementById(&#39;downloadTxtBtn&#39;);<br/>
+&nbsp;&nbsp;const passwordDisplay = document.getElementById(&#39;passwordDisplay&#39;);<br/>
+&nbsp;&nbsp;const qrCodeDiv = document.getElementById(&#39;qr-code&#39;);<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;function getRandomInt(max) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;return Math.floor(Math.random() * max);<br/>
+&nbsp;&nbsp;}<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;function generatePassword(length) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;let pwd = &#39;&#39;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;while (pwd.length &lt; length) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const randomoption = getRandomInt(4);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (randomoption === 0) pwd += char.charAt(getRandomInt(char.length));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else if (randomoption === 1) pwd += char_big.charAt(getRandomInt(char_big.length));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else if (randomoption === 2) pwd += numbers.charAt(getRandomInt(numbers.length));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else if (randomoption === 3) pwd += specialcharacter.charAt(getRandomInt(specialcharacter.length));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;return pwd;<br/>
+&nbsp;&nbsp;}<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;generateBtn.addEventListener(&#39;click&#39;, () =&gt; {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;const length = parseInt(document.getElementById(&#39;length&#39;).value);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!length || length &lt; 1) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(&#39;Bitte gib eine g&#252;ltige L&#228;nge ein.&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;usergeneratedstring = generatePassword(length);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;passwordDisplay.textContent = `Dein Passwort: ${usergeneratedstring}`;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;downloadQRBtn.disabled = false;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;downloadTxtBtn.disabled = false;<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;// QR-Code generieren und anzeigen<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;qrCodeDiv.innerHTML = &#39;&#39;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;QRCode.toCanvas(usergeneratedstring, { width: 200 }, (error, canvas) =&gt; {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (error) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.error(error);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;qrCodeDiv.textContent = &#39;QR Code konnte nicht erstellt werden.&#39;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;qrCodeDiv.appendChild(canvas);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br/>
+&nbsp;&nbsp;});<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;downloadQRBtn.addEventListener(&#39;click&#39;, () =&gt; {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!usergeneratedstring) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(&#39;Bitte erst ein Passwort generieren.&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;// QR Code Canvas schon generiert, wir nehmen es und speichern als PNG<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;const canvas = qrCodeDiv.querySelector(&#39;canvas&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!canvas) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(&#39;QR Code nicht gefunden.&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;const link = document.createElement(&#39;a&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;link.download = &#39;password_qr.png&#39;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;link.href = canvas.toDataURL(&#39;image/png&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;link.click();<br/>
+&nbsp;&nbsp;});<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;downloadTxtBtn.addEventListener(&#39;click&#39;, () =&gt; {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!usergeneratedstring) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(&#39;Bitte erst ein Passwort generieren.&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;const blob = new Blob([usergeneratedstring + &#39;\n&#39;], { type: &#39;text/plain&#39; });<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;const url = URL.createObjectURL(blob);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;const link = document.createElement(&#39;a&#39;);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;link.href = url;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;link.download = &#39;password.txt&#39;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;link.click();<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;URL.revokeObjectURL(url);<br/>
+&nbsp;&nbsp;});<br/>
+&lt;/script&gt;<br/>
+&nbsp;<br/>
+&lt;/body&gt;<br/>
+&lt;/html&gt;</body></html>
