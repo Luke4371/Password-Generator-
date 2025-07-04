@@ -349,7 +349,7 @@
       alert('Bitte erst ein Passwort generieren!');
       return;
     }
-    const url = `check.html?pwd=${encodeURIComponent(usergeneratedstring)}`;
+    const url = `https://luke4371.github.io/Password-Generator-/check.html?pwd=${encodeURIComponent(usergeneratedstring)}`;
     QRCode.toCanvas(url, { width: 400, color: { dark: '#c66fff', light: '#0000' } }, (error, canvas) => {
       if (error) {
         alert('QR Code konnte nicht erstellt werden.');
