@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>🔐 Passwortsuche – RockYou Check</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    #output {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔐 Passwortsuche in Wordlist</h1>
+  <p>Dieses Tool prüft, ob ein Passwort in einer hochgeladenen Passwortliste vorkommt (z. B. <code>rockyou.txt</code>).</p>
+
+  <label for="password">Gesuchtes Passwort:</label>
+  <input type="text" id="password" placeholder="z. B. 1_2_3_4">
+
+  <label for="wordlist">Wordlist-Datei auswählen (.txt):</label>
+  <input type="file" id="wordlist" accept=".txt">
+
+  <button onclick="searchPassword()">Passwort prüfen</button>
+
+  <div id="output">⬆️ Bitte Passwort eingeben und eine Wordlist auswählen.</div>
+
+  <script>
+    async function searchPassword() {
+      const password = document.getElementById('password').value.trim();
+      const fileInput = document.getElementById('wordlist');
+      const output = document.getElementById('output');
+      output.textContent = "⏳ Suche läuft...\n";
+
+      if (!password || !fileInput.files.length) {
+        output.textContent = "⚠️ Bitte Passwort und Wordlist-Datei angeben.";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = file.stream().getReader();
+      const decoder = new TextDecoder("latin1");
+
+      let buffer = "";
+      let found = false;
+      let lineCount = 0;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          let lines = buffer.split("\n");
+
+          buffer = lines.pop(); // letzte Zeile aufheben
+
+          for (const line of lines) {
+            lineCount++;
+            if (line.trim() === password) {
+              output.textContent = `✅ Passwort gefunden: ${password} (nach ${lineCount} Zeilen)`;
+              found = true;
+              reader.cancel(); // Suche abbrechen
+              return;
+            }
+            if (lineCount % 100000 === 0) {
+              output.textContent = `🔎 ${lineCount} Zeilen geprüft...`;
+            }
+          }
+        }
+        if (done) break;
+      }
+
+      output.textContent = found
+        ? `✅ Passwort gefunden: ${password}`
+        : `❌ Passwort nicht gefunden nach ${lineCount} Zeilen.`;
+    }
+  </script>
+
+</body>
+</html>
