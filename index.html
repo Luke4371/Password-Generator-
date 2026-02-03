@@ -1,391 +1,446 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Passwort Generator</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <style>
-    /* Reset & basics */
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0; padding: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e, #4e4e7e);
-      color: #e0e0ff;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 20px;
-    }
-    .container, .history-container {
-      background: rgba(30, 30, 60, 0.9);
-      padding: 30px 40px;
-      border-radius: 12px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 0 20px #6f42c1cc;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    h1 {
-      margin-bottom: 20px;
-      font-weight: 700;
-      color: #c66fff;
-      text-shadow: 0 0 8px #bb88ff;
-    }
-    h2 {
-      margin-bottom: 20px;
-      font-weight: 700;
-      color: #bb99ff;
-      text-shadow: 0 0 6px #a565ff;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #bb99ff;
-      text-align: left;
-    }
-    input[type="number"] {
-      width: 100%;
-      padding: 10px 12px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-      margin-bottom: 20px;
-      box-shadow: inset 0 0 6px #6f42c1;
-      background: #2c2c50;
-      color: #ddd;
-      transition: box-shadow 0.3s ease;
-    }
-    input[type="number"]:focus {
-      box-shadow: 0 0 12px #a565ff;
-      background: #3b3b6e;
-    }
-    .options {
-      text-align: left;
-      margin-bottom: 20px;
-      color: #ddd;
-    }
-    .options label {
-      font-weight: 500;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .options input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-    button {
-      background: #9a63ff;
-      border: none;
-      color: white;
-      padding: 12px 25px;
-      margin: 5px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      box-shadow: 0 0 10px #9a63ffaa;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
-    }
-    button:hover:not(:disabled) {
-      background-color: #b87dff;
-      box-shadow: 0 0 20px #b87dffcc;
-    }
-    button:disabled {
-      background-color: #5e5e7e;
-      cursor: not-allowed;
-      box-shadow: none;
-      opacity: 0.6;
-    }
-    #passwordDisplay {
-      font-size: 1.3rem;
-      margin: 20px 0 10px;
-      word-break: break-all;
-      color: #e0caff;
-      padding: 12px;
-      background: #2c2c50;
-      border-radius: 8px;
-      box-shadow: inset 0 0 8px #8e6ade;
-      user-select: all;
-      cursor: pointer;
-    }
-    #passwordStrength {
-      margin-bottom: 15px;
-      font-weight: 600;
-      color: #bb99ff;
-      height: 1.2em;
-    }
-    #qr-code {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    footer {
-      margin-top: 30px;
-      font-size: 0.8rem;
-      color: #8888bb;
-      user-select: none;
-    }
-    /* History Styling */
-    #historyList {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      max-height: 320px;
-      overflow-y: auto;
-      text-align: left;
-      color: #ddd;
-      font-size: 1rem;
-      user-select: none;
-    }
-    #historyList li {
-      background: #2c2c50;
-      margin-bottom: 10px;
-      padding: 10px 15px;
-      border-radius: 8px;
-      box-shadow: inset 0 0 6px #6f42c1cc;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      word-break: break-word;
-    }
-    #historyList li:hover {
-      background-color: #3b3b6e;
-    }
-
-    @media (max-width: 768px) {
-  body {
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-  }
-
-  .container, .history-container {
-    max-width: 100%;
-    padding: 20px;
-    margin: 10px 0;
-  }
-
-  button {
-    width: 100%;
-    margin: 8px 0;
-  }
-
-  #qr-code canvas {
-    max-width: 100%;
-    height: auto;
-  }
-}
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIMECORE - Text Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+       
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+       
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+       
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+       
+        header {
+            background: #111;
+            border-bottom: 2px solid #00ff00;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+       
+        h1 {
+            font-size: 2em;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: flicker 3s infinite;
+        }
+       
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+            52% { opacity: 0.5; }
+            54% { opacity: 0.95; }
+        }
+       
+        .game-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+       
+        .sidebar {
+            width: 300px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+       
+        .status-panel {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            background: #0a0a0a;
+        }
+       
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background: #330000;
+            border: 1px solid #ff0000;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff6666);
+            transition: width 0.3s;
+            box-shadow: 0 0 10px #ff0000;
+        }
+       
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+       
+        .item {
+            background: #222;
+            border: 1px solid #444;
+            padding: 5px;
+            text-align: center;
+            font-size: 0.8em;
+            cursor: help;
+            transition: all 0.2s;
+        }
+       
+        .item:hover {
+            border-color: #00ff00;
+            background: #1a1a1a;
+        }
+       
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #111;
+            border: 1px solid #333;
+        }
+       
+        .game-log {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 60vh;
+            border-bottom: 1px solid #333;
+        }
+       
+        .log-entry {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            border-left: 2px solid #00ff00;
+            padding-left: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+       
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+       
+        .log-entry.combat { border-color: #ff0000; color: #ff6666; }
+        .log-entry.loot { border-color: #ffff00; color: #ffff99; }
+        .log-entry.event { border-color: #00ffff; color: #99ffff; }
+        .log-entry.death { border-color: #ff0000; color: #ff0000; font-weight: bold; }
+        .log-entry.win { border-color: #ffd700; color: #ffd700; font-size: 1.2em; }
+       
+        .action-panel {
+            padding: 20px;
+            background: #0a0a0a;
+        }
+       
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+       
+        button {
+            background: #001100;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 1em;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        button:hover:not(:disabled) {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+       
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #333;
+            color: #333;
+        }
+       
+        button.danger {
+            border-color: #ff0000;
+            color: #ff6666;
+        }
+       
+        button.danger:hover:not(:disabled) {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+       
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+       
+        .modal.active {
+            display: flex;
+        }
+       
+        .modal-content {
+            background: #111;
+            border: 2px solid #00ff00;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+       
+        .riddle-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+       
+        .hidden { display: none !important; }
+       
+        .biome-indicator {
+            text-align: center;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            text-transform: uppercase;
+        }
+       
+        .dungeon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+       
+        .dungeon-node {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #444;
+            background: #1a1a1a;
+            font-size: 0.8em;
+            position: relative;
+        }
+       
+        .dungeon-node.completed {
+            background: #003300;
+            border-color: #00ff00;
+        }
+       
+        .dungeon-node.current {
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s infinite;
+        }
+       
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+       
+        @media (max-width: 768px) {
+            .game-container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-
-  <div class="container">
-    <h1>Passwort Generator</h1>
-
-    <label for="length">Passwort Länge:</label>
-    <input type="number" id="length" value="12" min="4" max="100" />
-
-    <div class="options">
-      <label><input type="checkbox" id="includeUppercase" checked /> Großbuchstaben (A-Z)</label>
-      <label><input type="checkbox" id="includeNumbers" checked /> Zahlen (0-9)</label>
-      <label><input type="checkbox" id="includeSpecial" checked /> Sonderzeichen (_!.%$*#-<>^*+,)</label>
+    <header>
+        <h1>⚡ PRIMECORE ⚡</h1>
+        <div style="font-size: 0.8em; opacity: 0.8;">Survival Text Adventure</div>
+    </header>
+   
+    <div class="game-container">
+        <aside class="sidebar">
+            <div class="status-panel">
+                <div class="biome-indicator" id="currentBiome">LONG ISLAND</div>
+                <div>
+                    <strong>❤ LEBEN:</strong>
+                    <div class="health-bar">
+                        <div class="health-fill" id="healthBar" style="width: 100%"></div>
+                    </div>
+                    <div id="healthText" style="text-align: center; margin-top: 5px;">100/100</div>
+                </div>
+            </div>
+           
+            <div class="status-panel">
+                <strong>🎒 INVENTAR (<span id="itemCount">0</span>)</strong>
+                <div class="inventory-grid" id="inventory"></div>
+            </div>
+           
+            <div class="status-panel">
+                <strong>🏰 DUNGEONS:</strong>
+                <div class="dungeon-grid" id="dungeonGrid">
+                    <div class="dungeon-node" data-biome="0" data-dungeon="0">D1</div>
+                    <div class="dungeon-node" data-biome="0" data-dungeon="1">D2</div>
+                    <div class="dungeon-node" data-biome="0" data-dungeon="2">D3</div>
+                    <div class="dungeon-node" data-biome="1" data-dungeon="0">D1</div>
+                    <div class="dungeon-node" data-biome="1" data-dungeon="1">D2</div>
+                    <div class="dungeon-node" data-biome="1" data-dungeon="2">D3</div>
+                    <div class="dungeon-node" data-biome="2" data-dungeon="0">D1</div>
+                    <div class="dungeon-node" data-biome="2" data-dungeon="1">D2</div>
+                    <div class="dungeon-node" data-biome="2" data-dungeon="2">D3</div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
+                    Reihe 1: Long Island<br>
+                    Reihe 2: Cryo Zone<br>
+                    Reihe 3: Obsidian
+                </div>
+            </div>
+        </aside>
+       
+        <main class="main-panel">
+            <div class="game-log" id="gameLog">
+                <div class="log-entry">Willkommen in PRIMECORE. Ein düsteres Land voller mutierter Kreaturen erwartet dich!</div>
+                <div class="log-entry">Dein Ziel: Besiege den Endboss TYRANOCELUS ARCEPHALUS.</div>
+            </div>
+           
+            <div class="action-panel" id="actionPanel">
+                <div id="biomeSelection">
+                    <strong>WÄHLE DEINEN STARTPUNKT:</strong>
+                    <div class="button-grid">
+                        <button onclick="selectBiome(0)">Long Island (Einfach)</button>
+                        <button onclick="selectBiome(1)">Cryo Zone (Mittel)</button>
+                        <button onclick="selectBiome(2)" class="danger">Obsidian Wilderness (Schwer)</button>
+                    </div>
+                </div>
+               
+                <div id="mainMenu" class="hidden">
+                    <strong>AKTION:</strong>
+                    <div class="button-grid">
+                        <button onclick="explore()">🔍 Erkunden</button>
+                        <button onclick="showDungeons()">🏰 Dungeon betreten</button>
+                        <button onclick="showCrafting()">⚒ Craften</button>
+                        <button onclick="showBiomeChange()">🌍 Biom wechseln</button>
+                        <button onclick="challengeEndBoss()" class="danger" id="bossBtn" disabled>👹 Endboss herausfordern</button>
+                    </div>
+                </div>
+               
+                <div id="combatMenu" class="hidden">
+                    <strong>KAMPFMODUS:</strong>
+                    <div id="combatInfo" style="margin-bottom: 10px; color: #ff6666;"></div>
+                    <div class="button-grid">
+                        <button onclick="combatAction('attack')" class="danger">⚔ Angreifen</button>
+                        <button onclick="combatAction('flee')">🏃 Fliehen</button>
+                    </div>
+                </div>
+               
+                <div id="bossCombatMenu" class="hidden">
+                    <strong>FINALER KAMPF:</strong>
+                    <div id="bossCombatInfo" style="margin-bottom: 10px; color: #ff0000; font-size: 1.2em;"></div>
+                    <div class="button-grid">
+                        <button onclick="bossCombatAction('attack')" class="danger">⚔ Angreifen</button>
+                        <button onclick="bossCombatAction('special')" style="border-color: #ffd700; color: #ffd700;">⚡ Spezialattacke</button>
+                    </div>
+                </div>
+               
+                <div id="dungeonSelect" class="hidden">
+                    <strong>DUNGEON AUSWÄHLEN:</strong>
+                    <div id="dungeonButtons" class="button-grid"></div>
+                    <button onclick="showMain()" style="margin-top: 10px; width: 100%;">Zurück</button>
+                </div>
+               
+                <div id="craftingMenu" class="hidden">
+                    <strong>CRAFTING:</strong>
+                    <div id="craftingButtons" class="button-grid"></div>
+                    <button onclick="showMain()" style="margin-top: 10px; width: 100%;">Zurück</button>
+                </div>
+               
+                <div id="biomeChange" class="hidden">
+                    <strong>REISEN ZU:</strong>
+                    <div class="button-grid">
+                        <button onclick="changeBiome(0)">Long Island</button>
+                        <button onclick="changeBiome(1)">Cryo Zone</button>
+                        <button onclick="changeBiome(2)" class="danger">Obsidian Wilderness</button>
+                    </div>
+                    <button onclick="showMain()" style="margin-top: 10px; width: 100%;">Zurück</button>
+                </div>
+            </div>
+        </main>
     </div>
-
-    <div>
-      <button id="generateBtn">Passwort generieren</button>
-      <button id="downloadQRBtn" disabled>QR Code herunterladen</button>
-      <button id="downloadTxtBtn" disabled>Passwort als TXT speichern</button>
+   
+    <div class="modal" id="riddleModal">
+        <div class="modal-content">
+            <h2>🏰 DUNGEON RÄTSEL</h2>
+            <p id="riddleText" style="margin-top: 15px; line-height: 1.6;"></p>
+            <input type="text" class="riddle-input" id="riddleInput" placeholder="Deine Antwort..." onkeypress="if(event.key==='Enter') checkRiddle()">
+            <div style="margin-top: 15px; color: #ff6666; font-size: 0.9em;">
+                Jeder Fehlversuch kostet 10 Leben!<br>
+                Aktuelles Leben: <span id="riddleHealth">100</span>
+            </div>
+            <button onclick="checkRiddle()" style="margin-top: 15px; width: 100%;">Antwort prüfen</button>
+        </div>
     </div>
-
-    <p id="passwordStrength"></p>
-    <p id="passwordDisplay" title="Klicke, um Passwort zu kopieren"></p>
-
-    <div id="qr-code"></div>
-
-    <footer>
-      &copy; 2025 Passwort Generator – Richard & Luke
-    </footer>
-  </div>
-
-  <div class="history-container">
-    <h2>Zuletzt generierte Passwörter</h2>
-    <ul id="historyList" title="Klicke, um Passwort zu kopieren"></ul>
-  </div>
-
-<script>
-  const char = 'abcdefghijklmnopqrstuvwxyz';
-  const char_big = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers = '0123456789';
-  const specialcharacter = "_!.%$*#-<>^*+~,";
-
-  let usergeneratedstring = '';
-  const passwordHistory = [];
-
-  const generateBtn = document.getElementById('generateBtn');
-  const downloadQRBtn = document.getElementById('downloadQRBtn');
-  const downloadTxtBtn = document.getElementById('downloadTxtBtn');
-  const passwordDisplay = document.getElementById('passwordDisplay');
-  const passwordStrength = document.getElementById('passwordStrength');
-  const qrCodeDiv = document.getElementById('qr-code');
-  const historyList = document.getElementById('historyList');
-
-  const lengthInput = document.getElementById('length');
-  const includeUppercase = document.getElementById('includeUppercase');
-  const includeNumbers = document.getElementById('includeNumbers');
-  const includeSpecial = document.getElementById('includeSpecial');
-
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
-
-  function generatePassword(length) {
-    let charset = char;
-    if (includeUppercase.checked) charset += char_big;
-    if (includeNumbers.checked) charset += numbers;
-    if (includeSpecial.checked) charset += specialcharacter;
-
-    if (charset.length === 0) return '';
-
-    let pwd = '';
-    for (let i = 0; i < length; i++) {
-      pwd += charset.charAt(getRandomInt(charset.length));
-    }
-    return pwd;
-  }
-
-  function calculateStrength(pwd) {
-    let strength = 0;
-    if (pwd.length >= 8) strength += 1;
-    if (/[a-z]/.test(pwd)) strength += 1;
-    if (/[A-Z]/.test(pwd)) strength += 1;
-    if (/\d/.test(pwd)) strength += 1;
-    if (/[_!.%$*#\-<>^*+~,]/.test(pwd)) strength += 1;
-
-    switch(strength) {
-      case 5: return {text: 'Sehr Stark 💪', color: '#4caf50'};
-      case 4: return {text: 'Stark 👍', color: '#8bc34a'};
-      case 3: return {text: 'Mittel', color: '#ffeb3b'};
-      case 2: return {text: 'Schwach', color: '#ff9800'};
-      default: return {text: 'Sehr Schwach', color: '#f44336'};
-    }
-  }
-
-  function updateHistory() {
-    if (passwordHistory.length > 5) passwordHistory.shift();
-
-    historyList.innerHTML = '';
-    for (let i = passwordHistory.length - 1; i >= 0; i--) {
-      const li = document.createElement('li');
-      li.textContent = passwordHistory[i];
-      li.title = 'Klicke, um Passwort zu kopieren';
-      li.addEventListener('click', () => {
-        navigator.clipboard.writeText(passwordHistory[i]).then(() => {
-          alert('Passwort wurde in die Zwischenablage kopiert!');
-        });
-      });
-      historyList.appendChild(li);
-    }
-  }
-
-  generateBtn.addEventListener('click', () => {
-    const length = parseInt(lengthInput.value);
-    if (!length || length < 4) {
-      alert('Bitte gib eine gültige Länge von mindestens 4 ein.');
-      return;
-    }
-    if (!includeUppercase.checked && !includeNumbers.checked && !includeSpecial.checked && length > char.length) {
-      alert('Bei nur Kleinbuchstaben ist die maximale Länge 26.');
-      return;
-    }
-
-    usergeneratedstring = generatePassword(length);
-    if (!usergeneratedstring) {
-      alert('Bitte wähle mindestens eine Zeichengruppe aus.');
-      return;
-    }
-
-    passwordDisplay.textContent = usergeneratedstring;
-    downloadQRBtn.disabled = false;
-    downloadTxtBtn.disabled = false;
-
-    passwordHistory.push(usergeneratedstring);
-    updateHistory();
-
-    const strength = calculateStrength(usergeneratedstring);
-    passwordStrength.textContent = `Passwort Stärke: ${strength.text}`;
-    passwordStrength.style.color = strength.color;
-
-    qrCodeDiv.innerHTML = '';
-
-    // Hier: QR-Code mit Link zu check.html und Passwort als URL-Parameter
-    const url = `https://luke4371.github.io/Password-Generator-/check.html?pwd=${encodeURIComponent(usergeneratedstring)}`;
-    QRCode.toCanvas(url, { width: 220, color: { dark: '#c66fff', light: '#0000' } }, (error, canvas) => {
-      if (error) {
-        console.error(error);
-        qrCodeDiv.textContent = 'QR Code konnte nicht erstellt werden.';
-      } else {
-        qrCodeDiv.appendChild(canvas);
-      }
-    });
-  });
-
-  downloadQRBtn.addEventListener('click', () => {
-    if (!usergeneratedstring) {
-      alert('Bitte erst ein Passwort generieren!');
-      return;
-    }
-    const url = `https://luke4371.github.io/Password-Generator-/check.html?pwd=${encodeURIComponent(usergeneratedstring)}`;
-    QRCode.toCanvas(url, { width: 400, color: { dark: '#c66fff', light: '#0000' } }, (error, canvas) => {
-      if (error) {
-        alert('QR Code konnte nicht erstellt werden.');
-        return;
-      }
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png');
-      link.download = 'qr-passwort.png';
-      link.click();
-    });
-  });
-
-  downloadTxtBtn.addEventListener('click', () => {
-    if (!usergeneratedstring) {
-      alert('Bitte erst ein Passwort generieren!');
-      return;
-    }
-    const blob = new Blob([usergeneratedstring], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'passwort.txt';
-    link.click();
-    URL.revokeObjectURL(link.href);
-  });
-
-  passwordDisplay.addEventListener('click', () => {
-    if (usergeneratedstring) {
-      navigator.clipboard.writeText(usergeneratedstring).then(() => {
-        alert('Passwort wurde in die Zwischenablage kopiert!');
-      });
-    }
-  });
-
-  // Initial history update (leer)
-  updateHistory();
-</script>
-
-</body>
-</html>
+   
+    <div class="modal" id="endModal">
+        <div class="modal-content" style="text-align: center;">
+            <h1 id="endTitle"></h1>
+            <p id="endText" style="margin: 20px 0; font-size: 1.2em;"></p>
+            <button onclick="location.reload()" style="width: 100%;">Neues Spiel</button>
+        </div>
+    </div>
+ 
