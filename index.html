@@ -414,8 +414,8 @@
         document.getElementById('riddleModal').classList.remove('active');
         completeDungeon();
     } else {
-        log(`Falsch! "${rawInput}" ist nicht korrekt. Versuche es erneut. (-10 Leben)`, 'combat');
-        changeHealth(-10);
+        log(`Falsch! "${rawInput}" ist nicht korrekt. Versuche es erneut. (-8 Leben)`, 'combat');
+        changeHealth(-8);
         document.getElementById('riddleHealth').textContent = state.health;
         
         if (state.health <= 0) {
@@ -1068,6 +1068,7 @@ function levenshteinDistance(str1, str2) {
         </div>
     </div>
  
+
 
 
 
