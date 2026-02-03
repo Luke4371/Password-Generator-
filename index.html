@@ -17,23 +17,87 @@
         };
        
         const riddles = [
-            {q: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", a: "licht"},
-            {q: "Was kann nur dort leben, wo es Licht gibt, aber verschwindet, wenn das Licht darauf scheint?", a: "schatten"},
-            {q: "Was ist immer vor dir, aber du kannst es nicht sehen?", a: "die zukunft"},
-            {q: "Was hat viele Nadeln, kann aber nicht nähen?", a: "tannenbaum"},
-            {q: "Eine Frau läuft durch die Stadt, als an ihr ein Auto vorbeifährt. Sofort weiß sie, dass dieses Auto gestohlen ist. Woher?", a: "es ist ihr eigenes auto"},
-            {q: "Ein Mann und sein Chef haben dieselben Eltern, sind aber keine Geschwister. Wie geht das?", a: "der mann ist selbstständig"},
-            {q: "Was ist das, was nasser wird, je mehr es trocknet?", a: "handtuch"},
-            {q: "Menschen kaufen mich, um zu essen, aber sie essen mich nie. Was bin ich?", a: "teller"},
-            {q: "Je weiter du vorankommst, desto mehr lässt du mich zurück?", a: "fußabdruck"},
-            {q: "Ich verdiene Milliarden, indem ich Fenster verkaufe. Wer bin ich?", a: "microsoft"},
-            {q: "Welcher Z Promi sagte: Willst du wissen wie viel dein Auto wert ist?", a: "ralf schumacher"},
-            {q: "Der Apfel fällt nicht weit vom?", a: "stamm"},
-            {q: "Der frühe Vogel fängt den?", a: "wurm"},
-            {q: "Wann entdeckte Christoph Kolumbus Amerika?", a: "1492"},
-            {q: "Wie viele Planeten gehören zu unserem Sonnensystem?", a: "8"},
-            {q: "Woraus bestehen Rosinen?", a: "weintrauben"}
-        ];
+    {
+        q: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", 
+        keywords: ["licht", "lichtstrahl", "lichtstrahlen", "sonnenlicht"],
+        check: (input) => input.includes("licht")
+    },
+    {
+        q: "Was kann nur dort leben, wo es Licht gibt, aber verschwindet, wenn das Licht darauf scheint?", 
+        keywords: ["schatten", "der schatten", "schattenwurf"],
+        check: (input) => input.includes("schatten")
+    },
+    {
+        q: "Was ist immer vor dir, aber du kannst es nicht sehen?", 
+        keywords: ["zukunft", "die zukunft", "zukunft"],
+        check: (input) => input.includes("zukunft")
+    },
+    {
+        q: "Was hat viele Nadeln, kann aber nicht nähen?", 
+        keywords: ["tannenbaum", "kiefer", "fichte", "nadelbaum", "baum", "tanne"],
+        check: (input) => input.includes("baum") || input.includes("tanne") || input.includes("kiefer") || input.includes("fichte")
+    },
+    {
+        q: "Eine Frau läuft durch die Stadt, als an ihr ein Auto vorbeifährt. Sofort weiß sie, dass dieses Auto gestohlen ist. Woher?", 
+        keywords: ["ihr eigenes auto", "eigenes auto", "ihr auto", "gehört ihr", "ist ihr"],
+        check: (input) => (input.includes("eigen") && input.includes("auto")) || (input.includes("ihr") && input.includes("auto"))
+    },
+    {
+        q: "Ein Mann und sein Chef haben dieselben Eltern, sind aber keine Geschwister. Wie geht das?", 
+        keywords: ["selbstständig", "selbständig", "eigenes unternehmen", "chef ist er selbst", "er ist der chef"],
+        check: (input) => input.includes("selbstständig") || input.includes("selbständig") || input.includes("eigen")
+    },
+    {
+        q: "Was ist das, was nasser wird, je mehr es trocknet?", 
+        keywords: ["handtuch", "tuch", "lappen", "trockentuch"],
+        check: (input) => input.includes("tuch") || input.includes("lappen")
+    },
+    {
+        q: "Menschen kaufen mich, um zu essen, aber sie essen mich nie. Was bin ich?", 
+        keywords: ["teller", "schüssel", "geschirr", "tisch"],
+        check: (input) => input.includes("teller") || input.includes("schüssel") || input.includes("geschirr")
+    },
+    {
+        q: "Je weiter du vorankommst, desto mehr lässt du mich zurück?", 
+        keywords: ["fußabdruck", "fußspur", "spur", "abdruck"],
+        check: (input) => input.includes("abdruck") || input.includes("spur")
+    },
+    {
+        q: "Ich verdiene Milliarden, indem ich Fenster verkaufe. Wer bin ich?", 
+        keywords: ["microsoft", "bill gates", "windows"],
+        check: (input) => input.includes("microsoft") || input.includes("windows") || input.includes("bill")
+    },
+    {
+        q: "Welcher Z Promi sagte: Willst du wissen wie viel dein Auto wert ist?", 
+        keywords: ["ralf schumacher", "schumacher", "ralf"],
+        check: (input) => input.includes("schumacher") || input.includes("ralf")
+    },
+    {
+        q: "Der Apfel fällt nicht weit vom?", 
+        keywords: ["stamm", "baumstamm", "stamm"],
+        check: (input) => input.includes("stamm")
+    },
+    {
+        q: "Der frühe Vogel fängt den?", 
+        keywords: ["wurm", "regenwurm", "würmchen"],
+        check: (input) => input.includes("wurm")
+    },
+    {
+        q: "Wann entdeckte Christoph Kolumbus Amerika?", 
+        keywords: ["1492", "1492 n.chr.", "1492 nach christus"],
+        check: (input) => input.includes("1492")
+    },
+    {
+        q: "Wie viele Planeten gehören zu unserem Sonnensystem?", 
+        keywords: ["8", "acht", "8 planeten", "acht planeten"],
+        check: (input) => input === "8" || input === "acht"
+    },
+    {
+        q: "Woraus bestehen Rosinen?", 
+        keywords: ["weintrauben", "trauben", "getrocknete trauben", "weinbeeren"],
+        check: (input) => input.includes("traube") || input.includes("beere")
+    }
+];
        
         const encounters = [
             {text: "Ein Händler erscheint und bietet dir etwas Holz an.", effect: () => addItem("Holz")},
@@ -322,30 +386,78 @@
         }
        
         function checkRiddle() {
-            const input = document.getElementById('riddleInput').value.trim().toLowerCase();
-            const correct = state.currentRiddle.a;
-           
-            if (input === correct) {
-                document.getElementById('riddleModal').classList.remove('active');
-                completeDungeon();
+    const rawInput = document.getElementById('riddleInput').value.trim();
+    // Eingabe bereinigen: kleinbuchstaben, keine satzzeichen, keine extra leerzeichen
+    const input = rawInput.toLowerCase()
+        .replace(/[.,!?;:"'-]/g, '') // Satzzeichen entfernen
+        .replace(/\s+/g, ' ')        // Mehrfache Leerzeichen zu einem
+        .trim();
+    
+    const riddle = state.currentRiddle;
+    let isCorrect = false;
+    
+    // Methode 1: Exakte Übereinstimmung mit Keywords
+    if (riddle.keywords && riddle.keywords.some(k => input === k)) {
+        isCorrect = true;
+    }
+    // Methode 2: Custom Check Funktion
+    else if (riddle.check && riddle.check(input)) {
+        isCorrect = true;
+    }
+    // Methode 3: Levenshtein-Distanz für Schreibfehler (fuzzy matching)
+    else if (riddle.keywords && riddle.keywords.some(k => levenshteinDistance(input, k) <= 2)) {
+        isCorrect = true;
+        log(`"${rawInput}" wurde als richtig akzeptiert (Tippfehler korrigiert)`, 'event');
+    }
+    
+    if (isCorrect) {
+        document.getElementById('riddleModal').classList.remove('active');
+        completeDungeon();
+    } else {
+        log(`Falsch! "${rawInput}" ist nicht korrekt. Versuche es erneut. (-10 Leben)`, 'combat');
+        changeHealth(-10);
+        document.getElementById('riddleHealth').textContent = state.health;
+        
+        if (state.health <= 0) {
+            document.getElementById('riddleModal').classList.remove('active');
+            log("Du bist im Dungeon gestorben! Inventar zurückgesetzt.", 'death');
+            state.inventory = [];
+            updateInventory();
+            state.currentBiome = BIOMES[0];
+            state.health = 50;
+            updateHealthBar();
+            document.getElementById('currentBiome').textContent = "LONG ISLAND";
+        }
+    }
+}
+
+// NEU: Levenshtein-Distanz für Schreibfehler-Toleranz
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
             } else {
-                log("Falsch! Versuche es erneut. -10 Leben", 'combat');
-                changeHealth(-10);
-                document.getElementById('riddleHealth').textContent = state.health;
-               
-                if (state.health <= 0) {
-                    document.getElementById('riddleModal').classList.remove('active');
-                    log("Du bist im Dungeon gestorben! Inventar zurückgesetzt.", 'death');
-                    state.inventory = [];
-                    updateInventory();
-                    state.currentBiome = BIOMES[0];
-                    state.health = 50;
-                    changeHealth(0);
-                    document.getElementById('currentBiome').textContent = "LONG ISLAND";
-                }
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1, // substitution
+                    matrix[i][j - 1] + 1,     // insertion
+                    matrix[i - 1][j] + 1      // deletion
+                );
             }
         }
-       
+    }
+    
+    return matrix[str2.length][str1.length];
+}       
         function completeDungeon() {
             const biomeIdx = getBiomeIndex();
             state.dungeonsCompleted[biomeIdx][state.currentDungeon] = true;
@@ -956,4 +1068,5 @@
         </div>
     </div>
  
+
 
