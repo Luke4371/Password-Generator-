@@ -1,254 +1,446 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>PRIMECORE – Text Adventure</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Minimaler, stabiler Stil -->
-  <style>
-    body {
-      margin: 0;
-      font-family: monospace;
-      background: #0a0a0a;
-      color: #00ff00;
-    }
-
-    header {
-      text-align: center;
-      padding: 15px;
-      border-bottom: 2px solid #00ff00;
-    }
-
-    main {
-      display: flex;
-      gap: 20px;
-      padding: 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    aside {
-      width: 300px;
-      border: 1px solid #00ff00;
-      padding: 15px;
-    }
-
-    section {
-      flex: 1;
-      border: 1px solid #00ff00;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #gameLog {
-      flex: 1;
-      padding: 15px;
-      overflow-y: auto;
-      border-bottom: 1px solid #00ff00;
-    }
-
-    .log-entry {
-      margin-bottom: 8px;
-    }
-
-    button {
-      background: #001100;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .health-bar {
-      background: #330000;
-      height: 20px;
-      margin-top: 5px;
-    }
-
-    #healthBar {
-      height: 100%;
-      background: red;
-      width: 100%;
-    }
-
-    .inventory {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-      margin-top: 5px;
-    }
-
-    .item {
-      border: 1px solid #00ff00;
-      text-align: center;
-      font-size: 0.8em;
-      padding: 4px;
-    }
-
-    .actions {
-      padding: 15px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      border: 2px solid #00ff00;
-      padding: 20px;
-      background: #000;
-      max-width: 500px;
-      width: 90%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIMECORE - Text Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+       
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+       
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+       
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+       
+        header {
+            background: #111;
+            border-bottom: 2px solid #00ff00;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+       
+        h1 {
+            font-size: 2em;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: flicker 3s infinite;
+        }
+       
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+            52% { opacity: 0.5; }
+            54% { opacity: 0.95; }
+        }
+       
+        .game-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+       
+        .sidebar {
+            width: 300px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+       
+        .status-panel {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            background: #0a0a0a;
+        }
+       
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background: #330000;
+            border: 1px solid #ff0000;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff6666);
+            transition: width 0.3s;
+            box-shadow: 0 0 10px #ff0000;
+        }
+       
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+       
+        .item {
+            background: #222;
+            border: 1px solid #444;
+            padding: 5px;
+            text-align: center;
+            font-size: 0.8em;
+            cursor: help;
+            transition: all 0.2s;
+        }
+       
+        .item:hover {
+            border-color: #00ff00;
+            background: #1a1a1a;
+        }
+       
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #111;
+            border: 1px solid #333;
+        }
+       
+        .game-log {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 60vh;
+            border-bottom: 1px solid #333;
+        }
+       
+        .log-entry {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            border-left: 2px solid #00ff00;
+            padding-left: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+       
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+       
+        .log-entry.combat { border-color: #ff0000; color: #ff6666; }
+        .log-entry.loot { border-color: #ffff00; color: #ffff99; }
+        .log-entry.event { border-color: #00ffff; color: #99ffff; }
+        .log-entry.death { border-color: #ff0000; color: #ff0000; font-weight: bold; }
+        .log-entry.win { border-color: #ffd700; color: #ffd700; font-size: 1.2em; }
+       
+        .action-panel {
+            padding: 20px;
+            background: #0a0a0a;
+        }
+       
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+       
+        button {
+            background: #001100;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 1em;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        button:hover:not(:disabled) {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+       
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #333;
+            color: #333;
+        }
+       
+        button.danger {
+            border-color: #ff0000;
+            color: #ff6666;
+        }
+       
+        button.danger:hover:not(:disabled) {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+       
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+       
+        .modal.active {
+            display: flex;
+        }
+       
+        .modal-content {
+            background: #111;
+            border: 2px solid #00ff00;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+       
+        .riddle-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+       
+        .hidden { display: none !important; }
+       
+        .biome-indicator {
+            text-align: center;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            text-transform: uppercase;
+        }
+       
+        .dungeon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+       
+        .dungeon-node {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #444;
+            background: #1a1a1a;
+            font-size: 0.8em;
+            position: relative;
+        }
+       
+        .dungeon-node.completed {
+            background: #003300;
+            border-color: #00ff00;
+        }
+       
+        .dungeon-node.current {
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s infinite;
+        }
+       
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+       
+        @media (max-width: 768px) {
+            .game-container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+    </style>
 </head>
-
 <body>
-
-<header>
-  <h1>PRIMECORE</h1>
-  <p>Survival Text Adventure</p>
-</header>
-
-<main>
-
-  <!-- STATUS -->
-  <aside>
-    <div>
-      <strong>BIOM:</strong>
-      <div id="currentBiome">—</div>
+    <header>
+        <h1>⚡ PRIMECORE ⚡</h1>
+        <div style="font-size: 0.8em; opacity: 0.8;">Survival Text Adventure</div>
+    </header>
+   
+    <div class="game-container">
+        <aside class="sidebar">
+            <div class="status-panel">
+                <div class="biome-indicator" id="currentBiome">LONG ISLAND</div>
+                <div>
+                    <strong>❤ LEBEN:</strong>
+                    <div class="health-bar">
+                        <div class="health-fill" id="healthBar" style="width: 100%"></div>
+                    </div>
+                    <div id="healthText" style="text-align: center; margin-top: 5px;">100/100</div>
+                </div>
+            </div>
+           
+            <div class="status-panel">
+                <strong>🎒 INVENTAR (<span id="itemCount">0</span>)</strong>
+                <div class="inventory-grid" id="inventory"></div>
+            </div>
+           
+            <div class="status-panel">
+                <strong>🏰 DUNGEONS:</strong>
+                <div class="dungeon-grid" id="dungeonGrid">
+                    <div class="dungeon-node" data-biome="0" data-dungeon="0">D1</div>
+                    <div class="dungeon-node" data-biome="0" data-dungeon="1">D2</div>
+                    <div class="dungeon-node" data-biome="0" data-dungeon="2">D3</div>
+                    <div class="dungeon-node" data-biome="1" data-dungeon="0">D1</div>
+                    <div class="dungeon-node" data-biome="1" data-dungeon="1">D2</div>
+                    <div class="dungeon-node" data-biome="1" data-dungeon="2">D3</div>
+                    <div class="dungeon-node" data-biome="2" data-dungeon="0">D1</div>
+                    <div class="dungeon-node" data-biome="2" data-dungeon="1">D2</div>
+                    <div class="dungeon-node" data-biome="2" data-dungeon="2">D3</div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
+                    Reihe 1: Long Island<br>
+                    Reihe 2: Cryo Zone<br>
+                    Reihe 3: Obsidian
+                </div>
+            </div>
+        </aside>
+       
+        <main class="main-panel">
+            <div class="game-log" id="gameLog">
+                <div class="log-entry">Willkommen in PRIMECORE. Ein düsteres Land voller mutierter Kreaturen erwartet dich!</div>
+                <div class="log-entry">Dein Ziel: Besiege den Endboss TYRANOCELUS ARCEPHALUS.</div>
+            </div>
+           
+            <div class="action-panel" id="actionPanel">
+                <div id="biomeSelection">
+                    <strong>WÄHLE DEINEN STARTPUNKT:</strong>
+                    <div class="button-grid">
+                        <button onclick="selectBiome(0)">Long Island (Einfach)</button>
+                        <button onclick="selectBiome(1)">Cryo Zone (Mittel)</button>
+                        <button onclick="selectBiome(2)" class="danger">Obsidian Wilderness (Schwer)</button>
+                    </div>
+                </div>
+               
+                <div id="mainMenu" class="hidden">
+                    <strong>AKTION:</strong>
+                    <div class="button-grid">
+                        <button onclick="explore()">🔍 Erkunden</button>
+                        <button onclick="showDungeons()">🏰 Dungeon betreten</button>
+                        <button onclick="showCrafting()">⚒ Craften</button>
+                        <button onclick="showBiomeChange()">🌍 Biom wechseln</button>
+                        <button onclick="challengeEndBoss()" class="danger" id="bossBtn" disabled>👹 Endboss herausfordern</button>
+                    </div>
+                </div>
+               
+                <div id="combatMenu" class="hidden">
+                    <strong>KAMPFMODUS:</strong>
+                    <div id="combatInfo" style="margin-bottom: 10px; color: #ff6666;"></div>
+                    <div class="button-grid">
+                        <button onclick="combatAction('attack')" class="danger">⚔ Angreifen</button>
+                        <button onclick="combatAction('flee')">🏃 Fliehen</button>
+                    </div>
+                </div>
+               
+                <div id="bossCombatMenu" class="hidden">
+                    <strong>FINALER KAMPF:</strong>
+                    <div id="bossCombatInfo" style="margin-bottom: 10px; color: #ff0000; font-size: 1.2em;"></div>
+                    <div class="button-grid">
+                        <button onclick="bossCombatAction('attack')" class="danger">⚔ Angreifen</button>
+                        <button onclick="bossCombatAction('special')" style="border-color: #ffd700; color: #ffd700;">⚡ Spezialattacke</button>
+                    </div>
+                </div>
+               
+                <div id="dungeonSelect" class="hidden">
+                    <strong>DUNGEON AUSWÄHLEN:</strong>
+                    <div id="dungeonButtons" class="button-grid"></div>
+                    <button onclick="showMain()" style="margin-top: 10px; width: 100%;">Zurück</button>
+                </div>
+               
+                <div id="craftingMenu" class="hidden">
+                    <strong>CRAFTING:</strong>
+                    <div id="craftingButtons" class="button-grid"></div>
+                    <button onclick="showMain()" style="margin-top: 10px; width: 100%;">Zurück</button>
+                </div>
+               
+                <div id="biomeChange" class="hidden">
+                    <strong>REISEN ZU:</strong>
+                    <div class="button-grid">
+                        <button onclick="changeBiome(0)">Long Island</button>
+                        <button onclick="changeBiome(1)">Cryo Zone</button>
+                        <button onclick="changeBiome(2)" class="danger">Obsidian Wilderness</button>
+                    </div>
+                    <button onclick="showMain()" style="margin-top: 10px; width: 100%;">Zurück</button>
+                </div>
+            </div>
+        </main>
     </div>
-
-    <hr>
-
-    <div>
-      <strong>LEBEN:</strong>
-      <div class="health-bar">
-        <div id="healthBar"></div>
-      </div>
-      <div id="healthText">100/100</div>
+   
+    <div class="modal" id="riddleModal">
+        <div class="modal-content">
+            <h2>🏰 DUNGEON RÄTSEL</h2>
+            <p id="riddleText" style="margin-top: 15px; line-height: 1.6;"></p>
+            <input type="text" class="riddle-input" id="riddleInput" placeholder="Deine Antwort..." onkeypress="if(event.key==='Enter') checkRiddle()">
+            <div style="margin-top: 15px; color: #ff6666; font-size: 0.9em;">
+                Jeder Fehlversuch kostet 10 Leben!<br>
+                Aktuelles Leben: <span id="riddleHealth">100</span>
+            </div>
+            <button onclick="checkRiddle()" style="margin-top: 15px; width: 100%;">Antwort prüfen</button>
+        </div>
     </div>
-
-    <hr>
-
-    <div>
-      <strong>INVENTAR (<span id="itemCount">0</span>)</strong>
-      <div id="inventory" class="inventory"></div>
+   
+    <div class="modal" id="endModal">
+        <div class="modal-content" style="text-align: center;">
+            <h1 id="endTitle"></h1>
+            <p id="endText" style="margin: 20px 0; font-size: 1.2em;"></p>
+            <button onclick="location.reload()" style="width: 100%;">Neues Spiel</button>
+        </div>
     </div>
-
-    <hr>
-
-    <div>
-      <strong>MUTANTENBLUT</strong>
-      <div id="mutantBlood">0/3</div>
-    </div>
-  </aside>
-
-  <!-- SPIEL -->
-  <section>
-
-    <div id="gameLog">
-      <div class="log-entry">Willkommen in PRIMECORE.</div>
-      <div class="log-entry">Besiege den Endboss TYRANOCELUS ARCEPHALUS.</div>
-    </div>
-
-    <!-- BIOM AUSWAHL -->
-    <div class="actions" id="biomeSelection">
-      <button onclick="selectBiome(0)">Long Island</button>
-      <button onclick="selectBiome(1)">Cryo Zone</button>
-      <button onclick="selectBiome(2)">Obsidian Wilderness</button>
-    </div>
-
-    <!-- HAUPTMENÜ -->
-    <div class="actions hidden" id="mainMenu">
-      <button onclick="explore()">Erkunden</button>
-      <button onclick="showDungeons()">Dungeon</button>
-      <button onclick="showCrafting()">Craften</button>
-      <button onclick="showBiomeChange()">Biom wechseln</button>
-      <button onclick="challengeEndBoss()" id="bossBtn" disabled>Endboss</button>
-    </div>
-
-    <!-- KAMPF -->
-    <div class="actions hidden" id="combatMenu">
-      <div id="combatInfo"></div>
-      <button onclick="combatAction('attack')">Angreifen</button>
-      <button onclick="combatAction('flee')">Fliehen</button>
-    </div>
-
-    <!-- BOSS -->
-    <div class="actions hidden" id="bossCombatMenu">
-      <div id="bossCombatInfo"></div>
-      <button onclick="bossCombatAction('attack')">Angreifen</button>
-      <button onclick="bossCombatAction('special')">Spezial</button>
-    </div>
-
-    <!-- DUNGEON -->
-    <div class="actions hidden" id="dungeonSelect">
-      <div id="dungeonButtons"></div>
-      <button onclick="showMain()">Zurück</button>
-    </div>
-
-    <!-- CRAFTING -->
-    <div class="actions hidden" id="craftingMenu">
-      <div id="craftingButtons"></div>
-      <button onclick="showMain()">Zurück</button>
-    </div>
-
-    <!-- BIOM WECHSEL -->
-    <div class="actions hidden" id="biomeChange">
-      <button onclick="changeBiome(0)">Long Island</button>
-      <button onclick="changeBiome(1)">Cryo Zone</button>
-      <button onclick="changeBiome(2)">Obsidian</button>
-      <button onclick="showMain()">Zurück</button>
-    </div>
-
-  </section>
-</main>
-
-<!-- RÄTSEL -->
-<div class="modal" id="riddleModal">
-  <div class="modal-content">
-    <h2>Dungeon Rätsel</h2>
-    <p id="riddleText"></p>
-    <input id="riddleInput">
-    <p>Leben: <span id="riddleHealth">100</span></p>
-    <button onclick="checkRiddle()">Antwort prüfen</button>
-  </div>
-</div>
-
-<!-- ENDE -->
-<div class="modal" id="endModal">
-  <div class="modal-content">
-    <h1 id="endTitle"></h1>
-    <p id="endText"></p>
-    <button onclick="location.reload()">Neues Spiel</button>
-  </div>
-</div>
-
-<!-- SPIELLOGIK -->
-<script src="game.js"></script>
-
-</body>
-</html>
+ 
