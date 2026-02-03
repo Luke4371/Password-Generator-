@@ -246,16 +246,16 @@
            
             const biome = biomes[getBiomeIndex()];
            
-            // NUR 20% CHANCE ETWAS ZU FINDEN (statt 100%)
-            if (Math.random() < 0.2) {
+            // NUR 34% CHANCE ETWAS ZU FINDEN (statt 100%)
+            if (Math.random() < 0.34) {
                 const foundResource = biome.resources[Math.floor(Math.random() * biome.resources.length)];
                 addItem(foundResource);
             } else {
                 log("Du suchst die Gegend ab, findest aber nichts Nützliches...", "event");
             }
            
-            // Mob-Begegnung bleibt bei 20% Chance
-            if (Math.random() < 0.2) {
+            // Mob-Begegnung bleibt bei 34% Chance
+            if (Math.random() < 0.34) {
                 const mob = biome.mobs[Math.floor(Math.random() * biome.mobs.length)];
                 log(`Ein ${mob} erscheint!`, 'combat');
                
@@ -1109,6 +1109,7 @@ function updateSpecialButton() {
         </div>
     </div>
  
+
 
 
 
