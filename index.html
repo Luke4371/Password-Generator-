@@ -3,18 +3,18 @@
         const END_BOSS = "Tyranocelus Arcephalus";
        
         let state = {
-            currentBiome: null,
-            health: 100,
-            mutantBlood: 0,
-            inventory: [],
-            capturedMobs: [],
-            endBossDefeated: false,
-            dungeonsCompleted: [[false, false, false], [false, false, false], [false, false, false]],
-            currentCombat: null,
-            currentDungeon: null,
-            gameStarted: false,
-            bossFight: null
-        };
+    currentBiome: null,
+    health: 100,
+    inventory: [],
+    capturedMobs: [],  // Optional: kann auch entfernt werden
+    endBossDefeated: false,
+    dungeonsCompleted: [[false, false, false], [false, false, false], [false, false, false]],
+    currentCombat: null,
+    currentDungeon: null,
+    gameStarted: false,
+    bossFight: null,
+    specialCooldown: 0
+};
        
         const riddles = [
     {
@@ -228,17 +228,17 @@
         function explore() {
             const biomes = {
                 0: {
-                    resources: ["Holz", "Stein", "Beeren", "Wasser"],
+                    resources: ["Holz", "Stein", "Leder"],
                     mobs: ["Friedliches Dino", "Pikachu", "Eichhörnchen"],
                     aggressive: false
                 },
                 1: {
-                    resources: ["Eis", "Frostkristalle", "Hartholz"],
+                    resources: ["Holz", "Stein", "Gold"],
                     mobs: ["Wolf", "Frost-Dino", "Glatzis"],
                     aggressive: Math.random() > 0.5
                 },
                 2: {
-                    resources: ["Obsidian", "Schwefel", "Giftpilze"],
+                    resources: ["Stein", "Leder", "Gold"],
                     mobs: ["Mutierter T-Rex", "Gift-Pokemon", "Obsidian-Wolf"],
                     aggressive: true
                 }
@@ -306,41 +306,35 @@
             document.getElementById('combatInfo').textContent =
                 `Kampf gegen ${c.mob}! Mob-Leben: ${c.mobHealth} | Dein Leben: ${state.health}`;
         }
-       
-        function combatAction(action) {
-            const combat = state.currentCombat;
-           
-            if (action === 'attack') {
-                combat.mobHealth -= combat.playerDamage;
-                log(`Du verursachst ${combat.playerDamage} Schaden.`, 'combat');
-               
-                if (combat.mobHealth > 0) {
-                    changeHealth(-combat.mobDamage);
-                    log(`${combat.mob} verursacht ${combat.mobDamage} Schaden.`, 'combat');
-                }
-            } else if (action === 'flee') {
-                if (combat.aggressive) {
-                    log("Du kannst nicht fliehen - der Mob verfolgt dich!", 'combat');
-                    return;
-                } else {
-                    log("Du fliehst erfolgreich.");
-                    endCombat();
-                    return;
-                }
-            }
-           
-            if (combat.mobHealth <= 0) {
-                log(`Du hast ${combat.mob} besiegt!`, 'win');
-                if (combat.mob.startsWith("Mutierter")) {
-                    state.mutantBlood++;
-                    document.getElementById('mutantBlood').textContent = `${state.mutantBlood}/${MUTANT_BLOOD_REQUIRED}`;
-                    log(`Du sammelst Mutantenblut! (${state.mutantBlood}/${MUTANT_BLOOD_REQUIRED})`, 'loot');
-                }
-                endCombat();
-            } else {
-                updateCombatInfo();
-            }
+       function combatAction(action) {
+    const combat = state.currentCombat;
+    
+    if (action === 'attack') {
+        combat.mobHealth -= combat.playerDamage;
+        log(`Du verursachst ${combat.playerDamage} Schaden.`, 'combat');
+        
+        if (combat.mobHealth > 0) {
+            changeHealth(-combat.mobDamage);
+            log(`${combat.mob} verursacht ${combat.mobDamage} Schaden.`, 'combat');
         }
+    } else if (action === 'flee') {
+        if (combat.aggressive) {
+            log("Du kannst nicht fliehen - der Mob verfolgt dich!", 'combat');
+            return;
+        } else {
+            log("Du fliehst erfolgreich.");
+            endCombat();
+            return;
+        }
+    }
+    
+    if (combat.mobHealth <= 0) {
+        log(`Du hast ${combat.mob} besiegt!`, 'win');
+        endCombat();
+    } else {
+        updateCombatInfo();
+    }
+}
        
         function endCombat() {
             state.currentCombat = null;
@@ -571,39 +565,86 @@ function levenshteinDistance(str1, str2) {
                 `BOSS: ${b.health} HP | DU: ${state.health} HP`;
         }
        
-        function bossCombatAction(action) {
-            const boss = state.bossFight;
-           
-            if (action === 'attack') {
-                const dmg = Math.floor(boss.playerDamage * (0.4 + Math.random() * 0.9));
-                boss.health -= dmg;
-                log(`Du verursachst ${dmg} Schaden.`, 'combat');
-            } else if (action === 'special') {
-                if (state.capturedMobs.length > 0) {
-                    const dmg = Math.floor(boss.playerDamage * 2 * (1.4 + Math.random() * 0.9));
-                    boss.health -= dmg;
-                    log(`SPECIAL! ${dmg} Schaden!`, 'win');
-                } else {
-                    log("Keine Mutanten für Spezialattacke verfügbar!", 'combat');
-                    return;
-                }
-            }
-           
-            if (boss.health > 0) {
-                const bossDmg = Math.floor(Math.random() * 7) + 9;
-                changeHealth(-bossDmg);
-                log(`${END_BOSS} verursacht ${bossDmg} Schaden.`, 'combat');
-            }
-           
-            if (boss.health <= 0) {
-                winGame();
-            } else if (state.health <= 0) {
-                gameOver();
-            } else {
-                updateBossInfo();
-            }
+       function bossCombatAction(action) {
+    const boss = state.bossFight;
+    
+    // Initialisiere Abklingzeit falls nicht vorhanden
+    if (typeof state.specialCooldown === 'undefined') {
+        state.specialCooldown = 0;
+    }
+    
+    // Reduziere Abklingzeit jede Runde
+    if (state.specialCooldown > 0) {
+        state.specialCooldown--;
+    }
+    
+    if (action === 'attack') {
+        const dmg = Math.floor(boss.playerDamage * (0.4 + Math.random() * 0.9));
+        boss.health -= dmg;
+        log(`Du verursachst ${dmg} Schaden.`, 'combat');
+        
+    } else if (action === 'special') {
+        // Prüfe Abklingzeit
+        if (state.specialCooldown > 0) {
+            log(`Spezialattacke noch für ${state.specialCooldown} Züge nicht verfügbar!`, 'combat');
+            return;
         }
-       
+        
+        // Setze Abklingzeit auf 2
+        state.specialCooldown = 2;
+        
+        const dmg = Math.floor(boss.playerDamage * 2.5 * (1.2 + Math.random() * 0.8));
+        boss.health -= dmg;
+        log(`⚡ SPEZIALATTACKE! ${dmg} Schaden! (Abklingzeit: 2 Züge)`, 'win');
+    }
+    
+    if (boss.health > 0) {
+        const bossDmg = Math.floor(Math.random() * 7) + 9;
+        changeHealth(-bossDmg);
+        log(`${END_BOSS} verursacht ${bossDmg} Schaden.`, 'combat');
+    }
+    
+    if (boss.health <= 0) {
+        winGame();
+    } else if (state.health <= 0) {
+        gameOver();
+    } else {
+        updateBossInfo();
+        updateSpecialButton();
+    }
+}
+
+function updateBossInfo() {
+    const b = state.bossFight;
+    let cooldownText = "";
+    
+    if (state.specialCooldown > 0) {
+        cooldownText = ` | ⚡: ${state.specialCooldown} Züge`;
+    } else {
+        cooldownText = " | ⚡: Bereit";
+    }
+    
+    document.getElementById('bossCombatInfo').textContent = 
+        `BOSS: ${b.health} HP | DU: ${state.health} HP${cooldownText}`;
+}
+
+function updateSpecialButton() {
+    const specialBtn = document.querySelector('#bossCombatMenu button[onclick="bossCombatAction(\'special\')"]');
+    
+    if (!specialBtn) return;
+    
+    if (state.specialCooldown > 0) {
+        specialBtn.disabled = true;
+        specialBtn.textContent = `⚡ Warte ${state.specialCooldown}`;
+        specialBtn.style.borderColor = "#444";
+        specialBtn.style.color = "#666";
+    } else {
+        specialBtn.disabled = false;
+        specialBtn.textContent = "⚡ Spezialattacke";
+        specialBtn.style.borderColor = "#ffd700";
+        specialBtn.style.color = "#ffd700";
+    }
+}       
         function gameOver() {
             document.getElementById('endTitle').textContent = "GAME OVER";
             document.getElementById('endTitle').style.color = "#ff0000";
@@ -1068,6 +1109,7 @@ function levenshteinDistance(str1, str2) {
         </div>
     </div>
  
+
 
 
 
