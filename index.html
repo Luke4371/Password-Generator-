@@ -593,7 +593,7 @@ function levenshteinDistance(str1, str2) {
         // Setze Abklingzeit auf 2
         state.specialCooldown = 2;
         
-        const dmg = Math.floor(boss.playerDamage * 2.5 * (1.2 + Math.random() * 0.8));
+        const dmg = Math.floor(boss.playerDamage * 1.5 * (1.2 + Math.random() * 0.8));
         boss.health -= dmg;
         log(`⚡ SPEZIALATTACKE! ${dmg} Schaden! (Abklingzeit: 2 Züge)`, 'win');
     }
@@ -1109,6 +1109,7 @@ function updateSpecialButton() {
         </div>
     </div>
  
+
 
 
 
