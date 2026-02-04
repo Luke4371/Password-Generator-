@@ -191,18 +191,26 @@
             document.getElementById('bossBtn').disabled = !anyBiomeComplete;
         }
        
-        function getBiomeIndex() {
-            return BIOMES.indexOf(state.currentBiome);
-        }
-       
-        function selectBiome(index) {
-            state.currentBiome = BIOMES[index];
-            state.gameStarted = true;
-           
-            document.getElementById('currentBiome').textContent = state.currentBiome.split(' ')[0].toUpperCase();
-            document.getElementById('biomeSelection').classList.add('hidden');
-            document.getElementById('mainMenu').classList.remove('hidden');
-           
+       function getBiomeIndex() {
+    return BIOMES.indexOf(state.currentBiome);
+}
+
+function selectBiome(index) {
+    state.currentBiome = BIOMES[index];
+    state.gameStarted = true;
+
+    // Bild anzeigen
+    document.getElementById('biomBild').style.display = "block";
+
+    // Biome-Name setzen
+    document.getElementById('currentBiome').textContent =
+        state.currentBiome.split(' ')[0].toUpperCase();
+
+    // Auswahlmenü ausblenden, Hauptmenü einblenden
+    document.getElementById('biomeSelection').classList.add('hidden');
+    document.getElementById('mainMenu').classList.remove('hidden');
+}
+
             switch(index) {
                 case 0:
                     log("Du spawnst auf Long Island - ein friedliches Biom mit reichen Ressourcen.");
@@ -218,6 +226,9 @@
                     changeHealth(-20);
                     break;
             }
+  
+  document.getElementById('biomBild').style.display = "none";
+  
            
             log("Was möchtest du tun?");
         }
@@ -1036,6 +1047,9 @@ function updateSpecialButton() {
                         <button onclick="selectBiome(0)">Long Island (Einfach)</button>
                         <button onclick="selectBiome(1)">Cryo Zone (Mittel)</button>
                         <button onclick="selectBiome(2)" class="danger">Obsidian Wilderness (Schwer)</button>
+                           </div>
+                     <img id="biomBild" src="Biom_Bild" style="dispay:none ; widht:300px ; margin-top: 15px ;">
+
                     </div>
                 </div>
                
@@ -1114,6 +1128,7 @@ function updateSpecialButton() {
         </div>
     </div>
  
+
 
 
 
